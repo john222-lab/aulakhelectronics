@@ -83,12 +83,12 @@ const Navigation = () => {
     <nav className="fixed w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
-          <div className="flex-shrink-0 flex items-center">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white mr-3 shadow-blue-500/30 shadow-lg">
+          <a href="https://aulakhelectronics.com/" className="flex-shrink-0 flex items-center group">
+            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white mr-3 shadow-blue-500/30 shadow-lg group-hover:bg-blue-700 transition-colors">
               <Zap size={24} fill="currentColor" />
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-xl tracking-tight text-gray-900 leading-none">AULAKH</span>
+              <span className="font-bold text-xl tracking-tight text-gray-900 leading-none group-hover:text-blue-600 transition-colors">AULAKH</span>
               <span className="text-xs font-bold text-blue-600 tracking-[0.2em] uppercase mt-0.5">Electronics</span>
             </div>
           </div>
@@ -111,7 +111,7 @@ const Navigation = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white border-b border-gray-100 pb-4 shadow-lg">
+        <div className="md:hidden bg-white border-b border-gray-100 pb-4 shadow-lg group-hover:bg-blue-700 transition-colors">
           <div className="px-4 pt-2 pb-3 space-y-1">
             <a href="#home" onClick={() => setIsOpen(false)} className="block px-3 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md">Home</a>
             <a href="#automation" onClick={() => setIsOpen(false)} className="block px-3 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md">Automation Solutions</a>
@@ -420,19 +420,7 @@ const ProductCatalog = () => {
                 <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
                   <span className="text-blue-600 font-bold text-lg">{product.price}</span>
                   <button className="text-sm font-bold text-gray-900 flex items-center hover:text-blue-600 transition-colors">
-                    View Specs <ChevronRight size={16} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const Contact = () => {
+                    View Specs <ChevronRight const Contact = () => {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [formData, setFormData] = useState({ name: '', phone: '', interest: 'Packaging Machine', message: '' });
   const handleSubmit = async (e: React.FormEvent) => {
@@ -532,6 +520,15 @@ const Contact = () => {
                 {status === 'loading' ? 'Sending...' : 'Get Free Consultation'}
               </button>
               {status === 'error' && <p className="text-red-500 text-center font-semibold">Something went wrong. Please try again.</p>}
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+-red-500 text-center font-semibold">Something went wrong. Please try again.</p>}
             </form>
           </div>
         </div>
