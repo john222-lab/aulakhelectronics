@@ -1,79 +1,24 @@
-{
-    "name":  "aulakh-electronics",
-    "private":  true,
-    "version":  "0.0.0",
-    "type":  "module",
-    "scripts":  {
-                    "dev":  "vite",
-                    "build":  "vite build",
-                    "lint":  "eslint .",
-                    "preview":  "vite preview"
-                },
-    "dependencies":  {
-                         "@hookform/resolvers":  "^3.3.4",
-                         "@radix-ui/react-accordion":  "^1.1.2",
-                         "@radix-ui/react-alert-dialog":  "^1.0.5",
-                         "@radix-ui/react-aspect-ratio":  "^1.0.3",
-                         "@radix-ui/react-avatar":  "^1.0.4",
-                         "@radix-ui/react-checkbox":  "^1.0.4",
-                         "@radix-ui/react-collapsible":  "^1.0.3",
-                         "@radix-ui/react-context-menu":  "^2.1.5",
-                         "@radix-ui/react-dialog":  "^1.1.6",
-                         "@radix-ui/react-dropdown-menu":  "^2.0.6",
-                         "@radix-ui/react-hover-card":  "^1.0.7",
-                         "@radix-ui/react-label":  "^2.0.2",
-                         "@radix-ui/react-menubar":  "^1.0.4",
-                         "@radix-ui/react-navigation-menu":  "^1.1.4",
-                         "@radix-ui/react-popover":  "^1.0.7",
-                         "@radix-ui/react-progress":  "^1.0.3",
-                         "@radix-ui/react-radio-group":  "^1.1.3",
-                         "@radix-ui/react-scroll-area":  "^1.0.5",
-                         "@radix-ui/react-select":  "^2.0.0",
-                         "@radix-ui/react-separator":  "^1.0.3",
-                         "@radix-ui/react-slider":  "^1.1.2",
-                         "@radix-ui/react-slot":  "^1.0.2",
-                         "@radix-ui/react-switch":  "^1.0.3",
-                         "@radix-ui/react-tabs":  "^1.0.4",
-                         "@radix-ui/react-toast":  "^1.1.5",
-                         "@radix-ui/react-toggle":  "^1.0.3",
-                         "@radix-ui/react-toggle-group":  "^1.0.4",
-                         "@radix-ui/react-tooltip":  "^1.0.7",
-                         "class-variance-authority":  "^0.7.0",
-                         "clsx":  "^2.1.0",
-                         "cmdk":  "^1.0.0",
-                         "date-fns":  "^3.3.1",
-                         "embla-carousel-react":  "^8.0.0",
-                         "input-otp":  "^1.1.0",
-                         "lucide-react":  "^0.487.0",
-                         "motion":  "^12.4.2",
-                         "next-themes":  "^0.2.1",
-                         "react":  "^18.2.0",
-                         "react-day-picker":  "^8.10.0",
-                         "react-dom":  "^18.2.0",
-                         "react-hook-form":  "^7.55.0",
-                         "react-resizable-panels":  "^2.0.9",
-                         "recharts":  "^2.12.0",
-                         "sonner":  "^1.4.0",
-                         "tailwind-merge":  "^2.2.1",
-                         "tailwindcss":  "^4.0.0",
-                         "tailwindcss-animate":  "^1.0.7",
-                         "vaul":  "^0.9.0",
-                         "zod":  "^3.22.4",
-                         "resend":  "^3.0.0"
-                     },
-    "devDependencies":  {
-                            "@tailwindcss/vite":  "^4.0.0",
-                            "@types/node":  "^20.11.17",
-                            "@types/react":  "^18.2.56",
-                            "@types/react-dom":  "^18.2.19",
-                            "@vitejs/plugin-react":  "^4.2.1",
-                            "autoprefixer":  "^10.4.17",
-                            "eslint":  "^8.56.0",
-                            "eslint-plugin-react-hooks":  "^4.6.0",
-                            "eslint-plugin-react-refresh":  "^0.4.5",
-                            "postcss":  "^8.4.35",
-                            "typescript":  "^5.2.2",
-                            "vite":  "^5.1.4",
-                            "@vercel/node":  "^3.0.0"
-                        }
+import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { Resend } from 'resend'
+const resend = new Resend(process.env.RESEND_API_KEY)
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'POST') return res.status(405).end()
+  const { name, email, phone, interest, message } = req.body
+  try {
+    await resend.emails.send({
+      from: 'Aulakh Quote Form <quotes@aulakhelectronics.com>',
+      to: 'info@aulakhelectronics.com',
+      reply_to: email,
+      subject: `New Quote Request:  - `,
+      html: `<h2>New Import Quote Request</h2>
+        <p><b>Name:</b> </p>
+        <p><b>Email:</b> </p>
+        <p><b>Phone:</b> </p>
+        <p><b>Machine Type:</b> </p>
+        <p><b>Requirements:</b><br/></p>`
+    })
+    return res.status(200).json({ success: true })
+  } catch (err) {
+    return res.status(500).json({ error: err.message })
+  }
 }
