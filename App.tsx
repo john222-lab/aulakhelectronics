@@ -433,6 +433,32 @@ const ProductCatalog = () => {
 };
 
 const Contact = () => {
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [formData, setFormData] = useState({ name: '', phone: '', interest: 'Packaging Machine', message: '' });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('loading');
+    try {
+      const res = await fetch('/api/send-quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      if (res.ok) setStatus('success'); else setStatus('error');
+    } catch { setStatus('error'); }
+  };
+  if (status === 'success') {
+    return (
+      <section id="contact" className="py-20 bg-gray-900 text-white flex items-center justify-center min-h-[600px]">
+        <div className="text-center p-10 bg-white rounded-2xl text-gray-900 max-w-md mx-4">
+          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+          <h2 className="text-3xl font-bold mb-2">Quote Request Sent!</h2>
+          <p className="text-gray-600">Our engineering team will contact you within 24 hours.</p>
+          <button onClick={() => setStatus('idle')} className="mt-6 text-blue-600 font-bold hover:underline">Send another request</button>
+        </div>
+      </section>
+    );
+  }
   return (
     <section id="contact" className="py-20 bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -443,7 +469,6 @@ const Contact = () => {
             <p className="text-gray-400 text-lg mb-10">
               Whether you need a single packaging machine or a full factory upgrade, Aulakh Electronics is your direct line to China's best manufacturing tech.
             </p>
-
             <div className="space-y-8">
               <div className="flex items-start">
                 <div className="w-14 h-14 bg-gray-800 rounded-xl flex items-center justify-center flex-shrink-0 mr-6 border border-gray-700">
@@ -454,7 +479,6 @@ const Contact = () => {
                   <p className="text-gray-400 mt-1">Hafizabad Road, Nokhar Mandi<br />Gujranwala, Pakistan</p>
                 </div>
               </div>
-              
               <div className="flex items-start">
                 <div className="w-14 h-14 bg-gray-800 rounded-xl flex items-center justify-center flex-shrink-0 mr-6 border border-gray-700">
                   <Phone className="text-blue-500 w-7 h-7" />
@@ -464,7 +488,6 @@ const Contact = () => {
                   <p className="text-gray-400 mt-1">+92 308 6456623</p>
                 </div>
               </div>
-
               <div className="flex items-start">
                 <div className="w-14 h-14 bg-gray-800 rounded-xl flex items-center justify-center flex-shrink-0 mr-6 border border-gray-700">
                   <Mail className="text-blue-500 w-7 h-7" />
@@ -476,24 +499,23 @@ const Contact = () => {
               </div>
             </div>
           </div>
-
           <div className="bg-white rounded-2xl p-8 lg:p-10 shadow-2xl text-gray-900">
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Request an Import Quote</h3>
             <p className="text-gray-500 mb-8">Fill out the form below and our engineering team will get back to you.</p>
-            <form className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                   <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
-                  <input type="text" id="name" className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all bg-gray-50" placeholder="Ali Khan" />
+                  <input type="text" id="name" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all bg-gray-50" placeholder="Ali Khan" />
                 </div>
                 <div>
                   <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
-                  <input type="tel" id="phone" className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all bg-gray-50" placeholder="+92 300..." />
+                  <input type="tel" id="phone" required value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all bg-gray-50" placeholder="+92 300..." />
                 </div>
               </div>
               <div>
                 <label htmlFor="interest" className="block text-sm font-semibold text-gray-700 mb-1">Machine Type</label>
-                <select id="interest" className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all bg-gray-50">
+                <select id="interest" value={formData.interest} onChange={e => setFormData({...formData, interest: e.target.value})} className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all bg-gray-50">
                   <option>Packaging Machine</option>
                   <option>Industrial Robot Arm</option>
                   <option>Conveyor System</option>
@@ -504,11 +526,12 @@ const Contact = () => {
               </div>
               <div>
                 <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-1">Production Requirements</label>
-                <textarea id="message" rows={4} className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all bg-gray-50" placeholder="E.g., I need to pack 50 bags per minute..."></textarea>
+                <textarea id="message" rows="4" required value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all bg-gray-50" placeholder="E.g., I need to pack 50 bags per minute..."></textarea>
               </div>
-              <button type="submit" className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30 text-lg">
-                Get Free Consultation
+              <button type="submit" disabled={status === 'loading'} className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30 text-lg">
+                {status === 'loading' ? 'Sending...' : 'Get Free Consultation'}
               </button>
+              {status === 'error' && <p className="text-red-500 text-center font-semibold">Something went wrong. Please try again.</p>}
             </form>
           </div>
         </div>
