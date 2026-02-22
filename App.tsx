@@ -372,8 +372,8 @@ const ProductCatalog = () => {
                 key={cat}
                 onClick={() => setActiveCategory(cat as Category)}
                 className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${activeCategory === cat
-                    ? 'bg-gray-900 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-gray-900 text-white shadow-lg'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
               >
                 {cat}
@@ -432,8 +432,9 @@ const ProductCatalog = () => {
 };
 
 const Contact = () => {
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', interest: 'Packaging Machine', message: '' });
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'bot' | 'error'>('idle');
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', interest: 'Packaging Machine', message: '', _honey: '' });
+  const [loadTime] = useState(Date.now());
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('loading');
@@ -441,12 +442,18 @@ const Contact = () => {
       const res = await fetch('/api/send-quote', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ ...formData, _ts: loadTime })
       });
-      if (res.ok) setStatus('success'); else setStatus('error');
+      const data = await res.json();
+      if (res.ok) {
+        if (data.warning) setStatus('bot');
+        else setStatus('success');
+      } else {
+        setStatus('error');
+      }
     } catch { setStatus('error'); }
   };
-  if (status === 'success') {
+  if (status === 'success' || status === 'bot') {
     return (
       <section id="contact" className="py-20 bg-gray-900 text-white flex items-center justify-center min-h-[600px]">
         <div className="text-center p-10 bg-white rounded-2xl text-gray-900 max-w-md mx-4">
@@ -502,6 +509,10 @@ const Contact = () => {
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Request an Import Quote</h3>
             <p className="text-gray-500 mb-8">Fill out the form below and our engineering team will get back to you.</p>
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* --- ANTI-SPAM HONEYPOT --- */}
+              <div className="hidden" aria-hidden="true">
+                <input type="text" name="_honey" value={formData._honey} onChange={e => setFormData({ ...formData, _honey: e.target.value })} tabIndex={-1} autoComplete="off" />
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
